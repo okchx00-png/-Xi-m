@@ -3,613 +3,857 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KAMENRIDER W/ Cheat Panel - Xiêm Premium</title>
+    <title>ᴘʀɪᴍᴇʟᴏᴄᴋW - KAMEN RIDER W</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
-
+        /* CSS RESET & VARIABLES */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        
         :root {
-            --neon-blue: #00f0ff;
-            --neon-red: #ff003c;
-            --neon-green: #00ff66;
-            --bg-dark: #050a14;
-            --panel-bg: rgba(0, 20, 40, 0.75);
-            
-            /* Biến CSS động cho ảnh - Sửa link tại đây nếu muốn đổi mặc định */
-            --dynamic-bg: url('https://images.alphacoders.com/133/1336256.png');
-            --dynamic-logo: url('https://i.ibb.co/6PZ8Zk4/kamen-rider-w-logo.jpg');
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            user-select: none;
-            font-family: 'Orbitron', sans-serif;
+            --primary: #ff003c;
+            --secondary: #00ffcc;
+            --bg-dark: #050505;
+            --panel-bg: rgba(10, 10, 10, 0.85);
+            --border-glow: rgba(255, 0, 60, 0.4);
         }
 
         body {
             background-color: var(--bg-dark);
-            background-image: 
-                radial-gradient(circle at 50% 50%, rgba(0, 240, 255, 0.1) 0%, transparent 60%),
-                linear-gradient(0deg, rgba(0,0,0,0.8), rgba(0,0,0,0.8));
-            color: var(--neon-blue);
+            color: #fff;
+            overflow: hidden;
             height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            overflow: hidden;
         }
 
-        /* Màn hình chờ / Đăng nhập Key */
-        #login-screen {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 10;
-            background: var(--dynamic-bg) center/cover no-repeat;
-            background-blend-mode: overlay;
-            background-color: rgba(0, 20, 40, 0.85);
+        /* BACKGROUND IMAGES */
+        .bg-image {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-size: cover;
+            background-position: center;
+            z-index: -2;
+            opacity: 0.7; 
+            filter: blur(1px) brightness(0.8); 
             transition: opacity 0.5s ease;
         }
 
-        #login-screen.hidden {
-            opacity: 0;
+        /* SCANLINES & CRT EFFECT */
+        body::after {
+            content: " ";
+            display: block;
+            position: absolute;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            z-index: 100;
+            background-size: 100% 2px, 3px 100%;
             pointer-events: none;
         }
 
-        .login-box {
-            background: var(--panel-bg);
-            padding: 40px;
-            border: 2px solid var(--neon-blue);
-            border-radius: 10px;
-            box-shadow: 0 0 20px var(--neon-blue), inset 0 0 20px rgba(0, 240, 255, 0.2);
-            text-align: center;
-            max-width: 400px;
-            width: 90%;
-            backdrop-filter: blur(5px);
-        }
-
-        .login-box h2 {
-            margin-bottom: 20px;
-            text-shadow: 0 0 10px var(--neon-blue);
-            color: #fff;
-        }
-
-        .login-logo {
-            width: 120px;
-            height: 120px;
-            border-radius: 50%;
-            margin: 0 auto 20px auto;
-            border: 2px solid var(--neon-blue);
-            box-shadow: 0 0 15px var(--neon-blue);
-            background: var(--dynamic-logo) center/cover no-repeat;
-        }
-
-        .input-group {
-            margin-bottom: 20px;
-            position: relative;
-        }
-
-        .input-group input {
+        /* SCREENS */
+        .screen {
+            display: none;
             width: 100%;
-            padding: 15px;
-            background: rgba(0,0,0,0.8);
-            border: 1px solid var(--neon-blue);
-            color: var(--neon-green);
+            height: 100%;
+            position: absolute;
+            top: 0; left: 0;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+        }
+        .screen.active { display: flex; }
+
+        /* LOGIN PANEL */
+        .login-panel {
+            background: var(--panel-bg);
+            border: 1px solid var(--border-glow);
+            box-shadow: 0 0 20px rgba(255, 0, 60, 0.2), inset 0 0 20px rgba(255, 0, 60, 0.1);
+            padding: 40px;
+            border-radius: 15px;
+            text-align: center;
+            width: 420px;
+            max-width: 90%;
+            position: relative;
+            backdrop-filter: blur(10px);
+        }
+
+        /* TARGET LOCK-ON ANIMATION */
+        .login-panel::before {
+            content: '';
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 300px; height: 300px;
+            border: 2px solid rgba(255, 0, 60, 0.25);
+            border-radius: 50%;
+            pointer-events: none;
+            animation: pulse-ring 3s linear infinite;
+            z-index: -1;
+        }
+
+        @keyframes pulse-ring {
+            0% { transform: translate(-50%, -50%) scale(0.8); opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(1.6); opacity: 0; }
+        }
+
+        /* TEXT EFFECTS */
+        .glitch-text {
+            font-size: 26px;
+            font-weight: 900;
+            color: #fff;
+            text-shadow: 0 0 10px var(--primary), 0 0 20px var(--primary);
+            letter-spacing: 2px;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+        }
+
+        .subtitle {
+            color: var(--secondary);
+            font-size: 12px;
+            margin-bottom: 30px;
+            letter-spacing: 3px;
+            font-weight: bold;
+        }
+
+        /* INPUT GROUP */
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        input[type="text"] {
+            background: rgba(0,0,0,0.6);
+            border: 1px solid #333;
+            padding: 14px;
+            color: #fff;
+            border-radius: 8px;
+            outline: none;
             font-size: 16px;
             text-align: center;
-            outline: none;
-            transition: all 0.3s;
+            transition: 0.3s;
+            letter-spacing: 1px;
         }
 
-        .input-group input:focus {
-            box-shadow: 0 0 15px var(--neon-blue);
+        input[type="text"]:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 15px rgba(255, 0, 60, 0.4);
         }
 
-        .btn {
+        button {
             background: transparent;
-            color: var(--neon-blue);
-            border: 2px solid var(--neon-blue);
-            padding: 12px 24px;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+            padding: 12px 20px;
+            border-radius: 8px;
             font-size: 16px;
             font-weight: bold;
             cursor: pointer;
             text-transform: uppercase;
-            transition: all 0.3s;
-            width: 100%;
-            margin-bottom: 10px;
-            box-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
-        }
-
-        .btn:hover {
-            background: var(--neon-blue);
-            color: #000;
-            box-shadow: 0 0 20px var(--neon-blue);
-        }
-
-        .links {
-            margin-top: 20px;
-            font-size: 12px;
-        }
-
-        .links a {
-            color: var(--neon-green);
-            text-decoration: none;
-            display: block;
-            margin: 5px 0;
             transition: 0.3s;
+            letter-spacing: 1px;
         }
 
-        .links a:hover {
-            text-shadow: 0 0 10px var(--neon-green);
+        button:hover {
+            background: var(--primary);
+            color: #000;
+            box-shadow: 0 0 20px var(--primary);
         }
 
-        /* Giao diện chính */
-        #app-screen {
-            display: none;
-            width: 100vw;
-            height: 100vh;
-            padding: 20px;
-            gap: 20px;
-            background: var(--dynamic-bg) center/cover no-repeat;
-            background-blend-mode: multiply;
-            background-color: rgba(5, 10, 20, 0.9);
-            flex-direction: column;
-        }
-
-        #app-screen.active {
+        .btn-group {
             display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .get-key-btn {
+            border-color: #ffaa00;
+            color: #ffaa00;
+            font-size: 13px;
+            width: 100%;
+        }
+
+        .get-key-btn:hover {
+            background: #ffaa00;
+            box-shadow: 0 0 20px #ffaa00;
+            color: #000;
+        }
+
+        .buy-btn {
+            border-color: var(--secondary);
+            color: var(--secondary);
+            font-size: 13px;
+            width: 100%;
+        }
+
+        .buy-btn:hover {
+            background: var(--secondary);
+            box-shadow: 0 0 20px var(--secondary);
+            color: #000;
+        }
+
+        /* ROUND TOGGLE SWITCH */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 44px;
+            height: 22px;
+        }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #333;
+            transition: .4s;
+            border-radius: 22px;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px; width: 16px;
+            left: 3px; bottom: 3px;
+            background-color: #fff;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        input:checked + .slider { background-color: var(--primary); box-shadow: 0 0 10px var(--primary); }
+        input:checked + .slider:before { transform: translateX(22px); }
+
+        /* MAIN PANEL */
+        .main-container {
+            width: 92%;
+            max-width: 1100px;
+            height: 90vh;
+            background: var(--panel-bg);
+            border: 1px solid var(--border-glow);
+            border-radius: 15px;
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 30px rgba(255, 0, 60, 0.15);
+            overflow: hidden;
         }
 
         .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 2px solid var(--neon-blue);
-            padding-bottom: 10px;
-            box-shadow: 0 10px 10px -10px var(--neon-blue);
-            background: rgba(0,0,0,0.5);
-            padding: 10px 20px;
-            border-radius: 5px;
+            border-bottom: 1px solid var(--border-glow);
+            padding-bottom: 15px;
+            margin-bottom: 20px;
         }
 
-        .header-left {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .logo-small {
-            width: 50px;
+        .logo-container img {
             height: 50px;
-            border-radius: 50%;
-            border: 2px solid var(--neon-red);
-            box-shadow: 0 0 15px var(--neon-red);
-            background: var(--dynamic-logo) center/cover no-repeat;
+            border-radius: 8px;
+            border: 1px solid var(--primary);
+            object-fit: cover;
+            box-shadow: 0 0 10px rgba(255, 0, 60, 0.3);
         }
 
-        .header h1 {
-            font-size: 24px;
-            color: #fff;
-            text-shadow: 0 0 10px var(--neon-blue), 0 0 20px var(--neon-blue);
+        .header-title {
+            font-size: 20px;
+            text-shadow: 0 0 10px var(--primary);
+            letter-spacing: 1px;
         }
+        .header-title span { color: var(--secondary); font-size: 14px; }
 
-        .bypass-section {
+        .user-info {
             display: flex;
             align-items: center;
             gap: 15px;
-            background: rgba(255, 0, 60, 0.1);
-            padding: 10px 20px;
-            border: 1px solid var(--neon-red);
-            border-radius: 5px;
         }
 
-        .bypass-section span {
-            color: var(--neon-red);
+        #user-key-type {
+            color: var(--secondary);
             font-weight: bold;
-            text-shadow: 0 0 5px var(--neon-red);
-        }
-
-        .main-content {
-            display: flex;
-            flex: 1;
-            gap: 20px;
-            overflow: hidden;
-        }
-
-        .sidebar {
-            width: 200px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .tab-btn {
-            background: rgba(0, 240, 255, 0.1);
-            border: 1px solid var(--neon-blue);
-            color: var(--neon-blue);
-            padding: 15px;
-            text-align: left;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: bold;
-            text-transform: uppercase;
-            transition: all 0.3s;
-            clip-path: polygon(0 0, 100% 0, 100% 80%, 90% 100%, 0 100%);
-            backdrop-filter: blur(3px);
-        }
-
-        .tab-btn.active {
-            background: var(--neon-blue);
-            color: #000;
-            box-shadow: 0 0 15px var(--neon-blue);
-        }
-
-        .panel {
-            flex: 1;
-            background: var(--panel-bg);
-            border: 1px solid var(--neon-blue);
+            font-size: 13px;
+            border: 1px solid var(--secondary);
+            padding: 6px 12px;
             border-radius: 5px;
-            padding: 20px;
-            overflow-y: auto;
-            box-shadow: inset 0 0 20px rgba(0, 240, 255, 0.1);
-            display: none;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 15px;
-            align-content: start;
-            backdrop-filter: blur(5px);
-        }
-
-        .panel.active {
-            display: grid;
-        }
-
-        /* Custom Scrollbar */
-        .panel::-webkit-scrollbar {
-            width: 8px;
-        }
-        .panel::-webkit-scrollbar-track {
-            background: rgba(0,0,0,0.5);
-        }
-        .panel::-webkit-scrollbar-thumb {
-            background: var(--neon-blue);
-            border-radius: 4px;
-        }
-
-        .feature-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: rgba(0, 0, 0, 0.6);
-            padding: 10px 15px;
-            border: 1px solid rgba(0, 240, 255, 0.3);
-            border-radius: 5px;
-            transition: all 0.3s;
-        }
-
-        .feature-item:hover {
-            border-color: var(--neon-blue);
-            box-shadow: 0 0 10px rgba(0, 240, 255, 0.2);
-        }
-
-        .feature-name {
-            color: #fff;
-            font-size: 12px;
-            text-transform: uppercase;
+            box-shadow: 0 0 10px rgba(0, 255, 204, 0.2);
             letter-spacing: 1px;
         }
 
-        /* Toggle Switch (Hình tròn) */
-        .switch {
-            position: relative;
-            display: inline-block;
-            width: 46px;
-            height: 46px;
+        /* TABS */
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
         }
 
-        .switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-
-        .slider {
-            position: absolute;
+        .tab-btn {
+            flex: 1;
+            background: rgba(0,0,0,0.5);
+            border: 1px solid #333;
+            color: #888;
+            padding: 12px;
+            font-size: 15px;
+            border-radius: 8px;
             cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: #1a1a1a;
-            border: 2px solid var(--neon-blue);
-            transition: .4s;
-            border-radius: 50%;
+            transition: 0.3s;
         }
 
-        .slider:before {
-            position: absolute;
-            content: "";
-            height: 30px;
-            width: 30px;
-            left: 6px;
-            bottom: 6px;
-            background-color: var(--neon-blue);
-            transition: .4s;
-            border-radius: 50%;
-            box-shadow: 0 0 10px var(--neon-blue);
+        .tab-btn.active {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: rgba(255, 0, 60, 0.1);
+            box-shadow: 0 0 15px rgba(255, 0, 60, 0.2);
+            font-weight: bold;
         }
 
-        input:checked + .slider {
-            border-color: var(--neon-green);
+        /* TAB CONTENT */
+        .tab-content {
+            flex: 1;
+            overflow-y: auto;
+            padding-right: 10px;
         }
 
-        input:checked + .slider:before {
-            transform: translateX(0); 
-            background-color: var(--neon-green);
-            box-shadow: 0 0 20px var(--neon-green);
-        }
-        
-        input:checked + .slider {
-            background-color: rgba(0, 255, 102, 0.2);
+        .tab-content::-webkit-scrollbar { width: 6px; }
+        .tab-content::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 6px; }
+
+        /* GRID FOR TOGGLES */
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 15px;
         }
 
-        /* Nút gạt tròn đặc biệt cho Bypass */
-        .switch-bypass {
-            width: 30px;
-            height: 30px;
-        }
-        .switch-bypass .slider:before {
-            height: 20px;
-            width: 20px;
-            left: 3px;
-            bottom: 3px;
-            background-color: var(--neon-red);
-            box-shadow: 0 0 10px var(--neon-red);
-        }
-        .switch-bypass input:checked + .slider {
-            border-color: var(--neon-green);
-        }
-        .switch-bypass input:checked + .slider:before {
-            background-color: var(--neon-green);
-            box-shadow: 0 0 15px var(--neon-green);
+        .toggle-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid #222;
+            padding: 12px 15px;
+            border-radius: 8px;
+            transition: 0.3s;
         }
 
-        /* Dropdown cho Súng */
-        .weapon-select {
-            width: 100%;
-            padding: 8px;
-            background: #000;
-            color: var(--neon-blue);
-            border: 1px solid var(--neon-blue);
-            border-radius: 5px;
-            font-family: 'Orbitron', sans-serif;
+        .toggle-item:hover {
+            border-color: rgba(255, 0, 60, 0.5);
+            background: rgba(255, 0, 60, 0.05);
+        }
+
+        .toggle-item span {
+            font-size: 12px;
+            font-weight: bold;
+            color: #ccc;
+            letter-spacing: 0.5px;
+        }
+
+        /* WEAPON SECTION */
+        .weapon-optimize-section {
+            margin-top: 30px;
+            border-top: 1px solid #333;
+            padding-top: 20px;
+            margin-bottom: 20px;
+        }
+
+        .weapon-optimize-section h3 {
+            color: var(--secondary);
+            margin-bottom: 15px;
+            font-size: 16px;
+            letter-spacing: 1px;
+        }
+
+        .weapon-select-container {
+            display: flex;
+            gap: 15px;
+            align-items: stretch;
+            flex-wrap: wrap;
+        }
+
+        select {
+            flex: 1;
+            background: rgba(0,0,0,0.8);
+            color: var(--secondary);
+            border: 1px solid var(--secondary);
+            padding: 10px;
+            border-radius: 8px;
             outline: none;
-            margin-top: 5px;
-        }
-        
-        .weapon-select option {
-            background: #000;
-            color: var(--neon-blue);
-        }
-
-        #notification {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: rgba(255, 0, 60, 0.9);
-            color: #fff;
-            padding: 15px 25px;
-            border-radius: 5px;
+            min-width: 250px;
             font-size: 14px;
-            box-shadow: 0 0 20px var(--neon-red);
-            transform: translateY(100px);
+        }
+
+        select option {
+            padding: 5px;
+            background: #111;
+        }
+
+        #optimize-all-btn {
+            border-color: var(--secondary);
+            color: var(--secondary);
+            padding: 10px 25px;
+            white-space: nowrap;
+        }
+
+        #optimize-all-btn:hover {
+            background: var(--secondary);
+            color: #000;
+            box-shadow: 0 0 20px var(--secondary);
+        }
+
+        /* TOAST NOTIFICATION */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--secondary);
+            color: #000;
+            padding: 15px 25px;
+            border-radius: 8px;
+            font-weight: bold;
+            box-shadow: 0 0 20px var(--secondary);
             opacity: 0;
-            transition: all 0.3s;
-            z-index: 100;
+            transform: translateY(20px);
+            transition: 0.3s;
+            z-index: 9999;
+            font-size: 14px;
         }
-
-        #notification.show {
-            transform: translateY(0);
+        .toast.show {
             opacity: 1;
+            transform: translateY(0);
         }
 
+        /* HIỆU ỨNG CHỮ VÔ GAME BÁ SÀN */
+        .bypass-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 99999;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+        .bypass-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .bypass-text {
+            font-size: 45px;
+            font-weight: 900;
+            color: #00ffcc;
+            text-shadow: 0 0 10px #00ffcc, 0 0 20px #00ffcc, 0 0 40px #ff003c;
+            letter-spacing: 3px;
+            animation: glitch-anim 0.2s infinite alternate;
+            text-align: center;
+        }
+
+        @keyframes glitch-anim {
+            0% { transform: translate(0); }
+            20% { transform: translate(-3px, 2px); text-shadow: 0 0 10px #ff003c, 0 0 20px #ff003c; }
+            40% { transform: translate(3px, -2px); text-shadow: 0 0 10px #00ffcc, 0 0 20px #00ffcc; }
+            60% { transform: translate(-2px, -1px); }
+            80% { transform: translate(2px, 1px); }
+            100% { transform: translate(0); text-shadow: 0 0 10px #00ffcc, 0 0 20px #00ffcc, 0 0 40px #ff003c; }
+        }
+
+        /* HIỆU ỨNG CHỮ BÁ KHI BẬT AIM/ANTIBAN */
+        .ba-overlay {
+            position: fixed;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 99999;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s;
+        }
+        .ba-overlay.active { opacity: 1; }
+        
+        .ba-text {
+            font-size: 100px;
+            font-weight: 900;
+            color: #ffaa00;
+            text-shadow: 0 0 20px #ffaa00, 0 0 50px #ff003c;
+            animation: pop-ba 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes pop-ba {
+            0% { transform: scale(0); opacity: 0; }
+            70% { transform: scale(1.2); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .version {
+            font-size: 10px;
+            color: #555;
+            margin-top: 25px;
+            letter-spacing: 1px;
+        }
+
+        @media (max-width: 768px) {
+            .header { flex-direction: column; gap: 15px; text-align: center; }
+            .grid-container { grid-template-columns: 1fr; }
+            .main-container { padding: 15px; }
+            .tabs { flex-wrap: wrap; }
+            .ba-text { font-size: 60px; }
+        }
     </style>
 </head>
 <body>
+    <!-- BACKGROUND IMAGES -->
+    <div class="bg-image" id="bg-login" style="background-image: url('https://i.postimg.cc/qRHxBchT/image1-jpg.jpg');"></div>
+    <div class="bg-image" id="bg-main" style="background-image: url('https://i.postimg.cc/qRHxBchT/image1-jpg.jpg'); display: none;"></div>
 
-    <!-- Màn hình Đăng Nhập -->
-    <div id="login-screen">
-        <div class="login-box">
-            <h2>XIÊM PREMIUM</h2>
-            <div class="login-logo"></div>
+    <!-- LOGIN SCREEN -->
+    <div id="login-screen" class="screen active">
+        <div class="login-panel">
+            <h1 class="glitch-text">ᴘʀɪᴍᴇʟᴏᴄᴋW</h1>
+            <p class="subtitle">KAMEN RIDER W // HACKER SYSTEM</p>
+            
             <div class="input-group">
-                <input type="text" id="key-input" placeholder="NHẬP KEY VIP...">
+                <input type="text" id="key-input" placeholder="NHẬP KEY TẠI ĐÂY...">
+                <button id="login-btn">KẾT NỐI HỆ THỐNG</button>
             </div>
-            <button class="btn" onclick="checkKey()">ĐĂNG NHẬP</button>
-            <div class="links">
-                <a href="https://okchx00-png.github.io/-Xi-m/" target="_blank">[ LẤY KEY THƯỜNG TẠI ĐÂY ]</a>
-                <a href="https://vi.anotepad.com/notes/38464ry5" target="_blank" style="color: var(--neon-red);">[ MUA KEY VIP TẠI ĐÂY ]</a>
+
+            <div class="btn-group">
+                <button id="login-get-key-btn" class="get-key-btn">GET KEY TẠI ĐÂY</button>
+                <button id="buy-key-btn" class="buy-btn">MUA KEY VIP TẠI ĐÂY</button>
             </div>
+            
+            <p class="version">ᴘʀɪᴍᴇʟᴏᴄᴋW // v4080</p>
         </div>
     </div>
 
-    <!-- Giao diện chính -->
-    <div id="app-screen">
-        <div class="header">
-            <div class="header-left">
-                <div class="logo-small"></div>
-                <h1>KAMENRIDER W/ CHEAT PANEL</h1>
-            </div>
-            <div class="bypass-section">
-                <span>BYPASS ANTIBAN GARENA</span>
-                <label class="switch switch-bypass">
-                    <input type="checkbox" id="bypass-toggle" checked>
-                    <span class="slider"></span>
-                </label>
-            </div>
-        </div>
-
-        <div class="main-content">
-            <div class="sidebar">
-                <button class="tab-btn active" onclick="switchTab('aim')">AIM</button>
-                <button class="tab-btn" onclick="switchTab('optimize')">TỐI ƯU MÁY</button>
-            </div>
-
-            <!-- Tab AIM -->
-            <div id="aim-panel" class="panel active">
-                <div class="feature-item"><span class="feature-name">AIMHEAD</span><label class="switch"><input type="checkbox" class="cheat-toggle"><span class="slider"></span></label></div>
-                <div class="feature-item"><span class="feature-name">AIMNECK</span><label class="switch"><input type="checkbox" class="cheat-toggle"><span class="slider"></span></label></div>
-                <div class="feature-item"><span class="feature-name">AIMLOCK</span><label class="switch"><input type="checkbox" class="cheat-toggle"><span class="slider"></span></label></div>
-                <div class="feature-item"><span class="feature-name">KHOÁ TÂM</span><label class="switch"><input type="checkbox" class="cheat-toggle"><span class="slider"></span></label></div>
-                <div class="feature-item"><span class="feature-name">LOCKHEAD</span><label class="switch"><input type="checkbox" class="cheat-toggle"><span class="slider"></span></label></div>
-                <div class="feature-item"><span class="feature-name">AIM NGỰC</span><label class="switch"><input type="checkbox" class="cheat-toggle"><span class="slider"></span></label></div>
-                <div class="feature-item"><span class="feature-name">NHẸ TÂM</span><label class="switch"><input type="checkbox" class="cheat-toggle"><span class="slider"></span></label></div>
-                <div class="feature-item"><span class="feature-name">BÁM ĐẦU</span><label class="switch"><input type="checkbox" class="cheat-toggle"><span class="slider"></span></label></div>
-                <div class="feature-item"><span class="feature-name">ĐẦM TÂM</span><label class="switch"><input type="checkbox" class="cheat-toggle"><span class="slider"></span></label></div>
-                <div class="feature-item"><span class="feature-name">HEADSHOT 50%</span><label class="switch"><input type="checkbox" class="cheat-toggle"><span class="slider"></span></label></div>
-                <div class="feature-item"><span class="feature-name">AUTO AIM</span><label class="switch"><input type="checkbox" class="cheat-toggle"><span class="slider"></span></label></div>
-                <div class="feature-item"><span class="feature-name">SENSI PRO</span><label class="switch"><input type="checkbox" class="cheat-toggle"><span class="slider"></span></label></div>
-                <div class="feature-item"><span class="feature-name">FIX RUNG TÂM</span><label class="switch"><input type="checkbox" class="cheat-toggle"><span class="slider"></span></label></div>
-                <div class="feature-item"><span class="feature-name">AIMBOT</span><label class="switch"><input type="checkbox" class="cheat-toggle"><span class="slider"></span></label></div>
-                <div class="feature-item"><span class="feature-name">AIMSMOOTH</span><label class="switch"><input type="checkbox" class="cheat-toggle"><span class="slider"></span></label></div>
-                <div class="feature-item"><span class="feature-name">AIMLOCK PRO</span><label class="switch"><input type="checkbox" class="cheat-toggle"><span class="slider"></span></label></div>
-                <div class="feature-item"><span class="feature-name">SHOTBOT</span><label class="switch"><input type="checkbox" class="cheat-toggle"><span class="slider"></span></label></div>
-            </div>
-
-            <!-- Tab TỐI ƯU MÁY -->
-            <div id="optimize-panel" class="panel">
-                <div class="feature-item"><span class="feature-name">MỞ KHOÁ 120 FPS</span><label class="switch"><input type="checkbox" class="cheat-toggle"><span class="slider"></span></label></div>
-                <div class="feature-item"><span class="feature-name">TĂNG TỐC GAME</span><label class="switch"><input type="checkbox" class="cheat-toggle"><span class="slider"></span></label></div>
-                <div class="feature-item"><span class="feature-name">MỞ KHOÁ 120HZ</span><label class="switch"><input type="checkbox" class="cheat-toggle"><span class="slider"></span></label></div>
-                <div class="feature-item"><span class="feature-name">TỐI ƯU CPU</span><label class="switch"><input type="checkbox" class="cheat-toggle"><span class="slider"></span></label></div>
-                <div class="feature-item"><span class="feature-name">TĂNG TỐC KẾT NỐI MẠNG</span><label class="switch"><input type="checkbox" class="cheat-toggle"><span class="slider"></span></label></div>
-                <div class="feature-item"><span class="feature-name">TỐI ƯU BỘ NHỚ RAM</span><label class="switch"><input type="checkbox" class="cheat-toggle"><span class="slider"></span></label></div>
-                
-                <div class="feature-item" style="grid-column: 1 / -1; flex-direction: column; align-items: flex-start;">
-                    <span class="feature-name" style="margin-bottom: 10px;">CHỌN SÚNG TỐI ƯU (TẤT CẢ SÚNG)</span>
-                    <select class="weapon-select" id="weapon-selector">
-                        <option value="all">TỐI ƯU TẤT CẢ SÚNG</option>
-                        <option value="ak47">AK47</option>
-                        <option value="m4a1">M4A1</option>
-                        <option value="scar">SCAR</option>
-                        <option value="awm">AWM</option>
-                        <option value="kar98k">KAR98K</option>
-                        <option value="ump">UMP</option>
-                        <option value="mp40">MP40</option>
-                        <option value="m1887">M1887</option>
-                        <option value="groza">GROZA</option>
-                        <option value="famas">FAMAS</option>
-                        <option value="vector">VECTOR</option>
-                        <option value="woodpecker">WOODPECKER</option>
-                        <option value="sks">SKS</option>
-                        <option value="m82b">M82B</option>
-                        <option value="spas12">SPAS12</option>
-                        <option value="parafal">PARAFAL</option>
-                    </select>
+    <!-- MAIN SCREEN -->
+    <div id="main-screen" class="screen">
+        <div class="main-container">
+            <div class="header">
+                <div class="logo-container">
+                    <img src="https://i.postimg.cc/qRHxBchT/image1-jpg.jpg" alt="Logo" id="app-logo">
+                </div>
+                <h2 class="header-title">ᴘʀɪᴍᴇʟᴏᴄᴋW <span>v4080</span></h2>
+                <div class="user-info">
+                    <span id="user-key-type">VIP KEY</span>
+                    <button id="logout-btn" style="padding: 8px 15px; font-size: 12px;">THOÁT</button>
                 </div>
             </div>
+
+            <div class="tabs">
+                <button class="tab-btn active" data-tab="aim">AIM</button>
+                <button class="tab-btn" data-tab="optimize">TỐI ƯU MÁY</button>
+                <button class="tab-btn" data-tab="antiban" style="color: #ffaa00; border-color: rgba(255, 170, 0, 0.3);">ANTIBAN</button>
+            </div>
+
+            <!-- TAB AIM -->
+            <div class="tab-content" id="aim-tab">
+                <div class="grid-container" id="aim-grid"></div>
+            </div>
+
+            <!-- TAB TỐI ƯU MÁY -->
+            <div class="tab-content" id="optimize-tab" style="display: none;">
+                <div class="grid-container" id="optimize-grid"></div>
+                
+                <div class="weapon-optimize-section">
+                    <h3>CHỌN SÚNG TỐI ƯU</h3>
+                    <div class="weapon-select-container">
+                        <select id="weapon-select" multiple size="5">
+                            <!-- Options injected by JS -->
+                        </select>
+                        <button id="optimize-all-btn">TỐI ƯU TẤT CẢ SÚNG</button>
+                    </div>
+                    
+                    <!-- NÚT TẢI MOBILECONFIG ĐƯỢC CHÈN VÀO ĐÂY -->
+                    <button id="download-profile-btn" style="margin-top: 20px; border-color: #ffaa00; color: #ffaa00; padding: 12px 20px; width: 100%;">
+                        TẢI CẤU HÌNH IOS (MOBILECONFIG)
+                    </button>
+                    
+                </div>
+            </div>
+
+            <!-- TAB ANTIBAN -->
+            <div class="tab-content" id="antiban-tab" style="display: none;">
+                <div class="grid-container" id="antiban-grid"></div>
+            </div>
         </div>
     </div>
 
-    <!-- Thông báo -->
-    <div id="notification">SAI KEY! VUI LÒNG KIỂM TRA LẠI.</div>
+    <!-- BYPASS OVERLAY -->
+    <div class="bypass-overlay" id="bypass-overlay">
+        <div class="bypass-text">VÔ GAME BÁ SÀN @@@XIÊM</div>
+    </div>
+
+    <!-- BÁ OVERLAY (Dành cho AIM & ANTIBAN) -->
+    <div class="ba-overlay" id="ba-overlay">
+        <div class="ba-text">BÁ</div>
+    </div>
 
     <script>
-        // ==========================================
-        // CẤU HÌNH ẢNH TRỰC TIẾP TẠI ĐÂY
-        // Sửa link ảnh ngay bên dưới nếu muốn đổi mặc định
-        // ==========================================
-        const CONFIG_BG_IMAGE = "https://images.alphacoders.com/133/1336256.png";
-        const CONFIG_LOGO_IMAGE = "https://i.ibb.co/6PZ8Zk4/kamen-rider-w-logo.jpg";
+        // --- DATA ---
+        const aimFeatures = [
+            "AIMHEAD", "AIMNECK", "AIMLOCK", "KHOÁ TÂM", "LOCKHEAD", "AIM NGỰC", 
+            "NHẸ TÂM", "BÁM ĐẦU", "ĐẦM TÂM", "HEADSHOT 50%", "AUTO AIM", 
+            "SENSI PRO", "FIX RUNG TÂM", "AIMBOT", "AIMSMOOTH", "AIMLOCK PRO", "SHOTBOT",
+            "REGDIT", "LOCK HEAD V6", "REGLOCK", "GHIM ĐẦU", "GHIM CỔ", "FIX ĐẠN LẠC", "AUTO HEADSHOT"
+        ];
 
-        // Áp dụng cấu hình ảnh vào CSS Variables ngay khi tải trang
-        document.documentElement.style.setProperty('--dynamic-bg', `url('${CONFIG_BG_IMAGE}')`);
-        document.documentElement.style.setProperty('--dynamic-logo', `url('${CONFIG_LOGO_IMAGE}')`);
+        const optimizeFeatures = [
+            "MỞ KHOÁ 120 FPS", "TĂNG TỐC GAME", "MỞ KHOÁ 120HZ", 
+            "TỐI ƯU CPU", "TĂNG TỐC KẾT NỐI MẠNG", "TỐI ƯU BỘ NHỚ RAM",
+            "TĂNG NHẠY CHO MÁY", "HỖ TRỢ KÉO TÂM", "TỐI ƯU CẤU HÌNH MÁY", "TỐI ƯU CHIP",
+            "NHẠY MÀN"
+        ];
 
-        // ==========================================
-        // LOGIC CHÍNH
-        // ==========================================
+        const antibanFeatures = [
+            "ANTICHEAT", "ANTIBAN", "FIX BAN", "BYPASS"
+        ];
 
-        function showNotify(msg) {
-            const notify = document.getElementById('notification');
-            notify.innerText = msg;
-            notify.classList.add('show');
-            setTimeout(() => {
-                notify.classList.remove('show');
-            }, 3000);
+        const weapons = [
+            "MP40", "M4A1", "AK47", "M1014", "UMP", "SCAR", "AWM", "Kar98k", 
+            "Woodpecker", "SKS", "M14", "M1887", "M249", "M60", "Thompson", 
+            "P90", "MP5", "Vector", "Desert Eagle", "USP", "Glock", "FAMAS", 
+            "Groza", "M82B", "SVD", "SPAS12", "MAG-7", "UMP45", "AN94", 
+            "M16A4", "M4A1-S", "SCAR-L", "M500"
+        ];
+
+        // --- DOM ELEMENTS ---
+        const loginScreen = document.getElementById('login-screen');
+        const mainScreen = document.getElementById('main-screen');
+        const keyInput = document.getElementById('key-input');
+        const loginBtn = document.getElementById('login-btn');
+        const buyKeyBtn = document.getElementById('buy-key-btn');
+        const loginGetKeyBtn = document.getElementById('login-get-key-btn');
+        const logoutBtn = document.getElementById('logout-btn');
+        const userKeyType = document.getElementById('user-key-type');
+        const bgLogin = document.getElementById('bg-login');
+        const bgMain = document.getElementById('bg-main');
+        const bypassOverlay = document.getElementById('bypass-overlay');
+        const baOverlay = document.getElementById('ba-overlay');
+
+        // --- CREATE TOGGLE COMPONENT ---
+        function createToggle(labelText, type = "normal") {
+            const div = document.createElement('div');
+            div.className = 'toggle-item';
+            
+            const span = document.createElement('span');
+            span.textContent = labelText;
+            
+            const switchLabel = document.createElement('label');
+            switchLabel.className = 'switch';
+            
+            const input = document.createElement('input');
+            input.type = 'checkbox';
+            
+            // Gắn sự kiện dựa vào loại (type)
+            if (type === "bypass") {
+                input.addEventListener('change', (e) => {
+                    if (e.target.checked) {
+                        bypassOverlay.classList.add('active');
+                        setTimeout(() => bypassOverlay.classList.remove('active'), 2500);
+                    }
+                });
+            } else if (type === "aim" || type === "antiban") {
+                // Cả AIM và ANTIBAN đều hiện chữ BÁ
+                input.addEventListener('change', (e) => {
+                    if (e.target.checked) {
+                        baOverlay.classList.add('active');
+                        setTimeout(() => baOverlay.classList.remove('active'), 800);
+                    }
+                });
+            }
+            
+            const slider = document.createElement('span');
+            slider.className = 'slider round';
+            
+            switchLabel.appendChild(input);
+            switchLabel.appendChild(slider);
+            
+            div.appendChild(span);
+            div.appendChild(switchLabel);
+            
+            return div;
         }
 
-        function checkKey() {
-            const keyInput = document.getElementById('key-input').value.trim();
-            const loginScreen = document.getElementById('login-screen');
-            const appScreen = document.getElementById('app-screen');
+        // --- INIT UI ---
+        function initUI() {
+            const aimGrid = document.getElementById('aim-grid');
+            aimFeatures.forEach(feature => {
+                aimGrid.appendChild(createToggle(feature, "aim"));
+            });
 
-            const vipKey = "XIEM-PREMIUMLOCK-12112014";
-            const freeKey = "XIEM-FREE-282729220";
-            const bannedKey = "ᴘʀɪᴍᴇʟᴏᴄᴋW";
+            const optimizeGrid = document.getElementById('optimize-grid');
+            optimizeFeatures.forEach(feature => {
+                optimizeGrid.appendChild(createToggle(feature, "normal"));
+            });
 
-            if (keyInput === vipKey) {
-                loginScreen.classList.add('hidden');
-                appScreen.classList.add('active');
-                showNotify("ĐĂNG NHẬP THÀNH CÔNG! CHÀO MỪNG VIP.");
-            } 
-            else if (keyInput === freeKey) {
-                const expireDate = new Date('2026-11-27T23:59:59').getTime();
-                const currentDate = new Date().getTime();
+            const antibanGrid = document.getElementById('antiban-grid');
+            antibanFeatures.forEach(feature => {
+                // Nếu là BYPASS thì gắn hiệu ứng VÔ GAME BÁ SÀN, còn lại gắn hiệu ứng BÁ
+                let type = feature === "BYPASS" ? "bypass" : "antiban";
+                antibanGrid.appendChild(createToggle(feature, type));
+            });
 
-                if (currentDate <= expireDate) {
-                    loginScreen.classList.add('hidden');
-                    appScreen.classList.add('active');
-                    showNotify("ĐĂNG NHẬP THÀNH CÔNG! KEY THƯỜNG.");
-                } else {
-                    showNotify("KEY ĐÃ HẾT HẠN! VUI LÒNG MUA KEY VIP.");
-                    document.getElementById('key-input').value = "";
-                }
-            } 
-            else if (keyInput === bannedKey) {
-                showNotify("KEY NÀY ĐÃ BỊ VÔ HIỆU HOÁ!");
-                document.getElementById('key-input').value = "";
-            }
-            else {
-                showNotify("KEY KHÔNG HỢP LỆ! VUI LÒNG NHẬP LẠI.");
-            }
+            const weaponSelect = document.getElementById('weapon-select');
+            weapons.forEach(weapon => {
+                const option = document.createElement('option');
+                option.value = weapon;
+                option.textContent = weapon;
+                weaponSelect.appendChild(option);
+            });
         }
 
-        document.getElementById('key-input').addEventListener('keypress', function (e) {
-            if (e.key === 'Enter') {
-                checkKey();
-            }
-        });
-
-        function switchTab(tabId) {
-            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-            document.querySelectorAll('.panel').forEach(panel => panel.classList.remove('active'));
-
-            if (tabId === 'aim') {
-                document.querySelectorAll('.tab-btn')[0].classList.add('active');
-                document.getElementById('aim-panel').classList.add('active');
-            } else if (tabId === 'optimize') {
-                document.querySelectorAll('.tab-btn')[1].classList.add('active');
-                document.getElementById('optimize-panel').classList.add('active');
-            }
-        }
-
-        document.querySelectorAll('.cheat-toggle').forEach(toggle => {
-            toggle.addEventListener('change', function() {
-                const label = this.closest('.feature-item').querySelector('.feature-name');
-                if (this.checked) {
-                    label.style.color = "var(--neon-green)";
-                    label.style.textShadow = "0 0 5px var(--neon-green)";
-                } else {
-                    label.style.color = "#fff";
-                    label.style.textShadow = "none";
-                }
+        // --- TABS LOGIC ---
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none');
+                
+                btn.classList.add('active');
+                const tabId = btn.getAttribute('data-tab');
+                document.getElementById(tabId + '-tab').style.display = 'block';
             });
         });
+
+        // --- LOGIN LOGIC ---
+        loginBtn.addEventListener('click', () => {
+            const key = keyInput.value.trim();
+            const today = new Date();
+            
+            const handleLogin = (type) => {
+                userKeyType.textContent = type;
+                loginScreen.classList.remove('active');
+                mainScreen.classList.add('active');
+                bgLogin.style.display = 'none';
+                bgMain.style.display = 'block';
+            };
+
+            if (key === "XIEM-PREMIUMLOCK-12112014") {
+                handleLogin("VIP KEY");
+            } else if (key === "XIEM-FREE-282729220") {
+                const expiryDate = new Date("2026-11-27T23:59:59");
+                if (today <= expiryDate) {
+                    handleLogin("FREE KEY");
+                } else {
+                    alert("Key FREE đã hết hạn vào ngày 27/11/2026!");
+                    window.location.href = "https://okchx00-png.github.io/-Xi-m/";
+                }
+            } else if (key === "XIEM-PREMIUM-02837474920" || key === "XIEM-PREMIUMC7-0732984008") {
+                let expiryStr = localStorage.getItem(key);
+                if (!expiryStr) {
+                    const expiryDate = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
+                    localStorage.setItem(key, expiryDate.toISOString());
+                    handleLogin("VIP 1 TUẦN");
+                } else {
+                    const expiryDate = new Date(expiryStr);
+                    if (today <= expiryDate) {
+                        handleLogin("VIP 1 TUẦN");
+                    } else {
+                        alert("Key VIP 1 tuần này đã hết hạn!");
+                        window.location.href = "https://okchx00-png.github.io/-Xi-m/";
+                    }
+                }
+            } else {
+                alert("Key không hợp lệ! Đang chuyển hướng đến trang lấy key...");
+                window.location.href = "https://okchx00-png.github.io/-Xi-m/";
+            }
+        });
+
+        // --- CÁC NÚT NGOÀI ---
+        loginGetKeyBtn.addEventListener('click', () => {
+            window.location.href = "https://vi.anotepad.com/notes/xf957dnc";
+        });
+
+        buyKeyBtn.addEventListener('click', () => {
+            window.location.href = "https://vi.anotepad.com/notes/38464ry5";
+        });
+
+        logoutBtn.addEventListener('click', () => {
+            mainScreen.classList.remove('active');
+            loginScreen.classList.add('active');
+            keyInput.value = '';
+            bgMain.style.display = 'none';
+            bgLogin.style.display = 'block';
+        });
+
+        // --- TỐI ƯU SÚNG ---
+        document.getElementById('optimize-all-btn').addEventListener('click', () => {
+            const weaponSelect = document.getElementById('weapon-select');
+            const options = weaponSelect.options;
+            for (let i = 0; i < options.length; i++) {
+                options[i].selected = true;
+            }
+            showToast("Đã tối ưu tất cả súng thành công!");
+        });
+
+        function showToast(message) {
+            let toast = document.getElementById('toast');
+            if (!toast) {
+                toast = document.createElement('div');
+                toast.id = 'toast';
+                toast.className = 'toast';
+                document.body.appendChild(toast);
+            }
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        // --- TẠO VÀ TẢI FILE MOBILECONFIG ---
+        const mobileconfigContent = `<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>PayloadContent</key>
+    <array>
+        <dict>
+            <key>PayloadType</key>
+            <string>com.apple.wifi.managed</string>
+            <key>PayloadIdentifier</key>
+            <string>com.xiem.wifi</string>
+            <key>PayloadUUID</key>
+            <string>12345678-1234-1234-1234-1234567890AB</string>
+            <key>PayloadVersion</key>
+            <integer>1</integer>
+            <key>SSID_STR</key>
+            <string>Ten_Wifi_Cua_Ban</string>
+            <key>AutoJoin</key>
+            <true/>
+            <key>EncryptionType</key>
+            <string>WPA</string>
+            <key>Password</key>
+            <string>Mat_Khau_Wifi</string>
+        </dict>
+    </array>
+    <key>PayloadDisplayName</key>
+    <string>XIEM Cau Hinh</string>
+    <key>PayloadIdentifier</key>
+    <string>com.xiem.profile</string>
+    <key>PayloadOrganization</key>
+    <string>XIEM</string>
+    <key>PayloadRemovalDisallowed</key>
+    <false/>
+    <key>PayloadUUID</key>
+    <string>87654321-4321-4321-4321-0987654321BA</string>
+    <key>PayloadVersion</key>
+    <integer>1</integer>
+</dict>
+</plist>`;
+
+        document.getElementById('download-profile-btn').addEventListener('click', () => {
+            const blob = new Blob([mobileconfigContent], { type: 'application/x-apple-aspen-config' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'xiem_config.mobileconfig';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            if (typeof showToast === 'function') {
+                showToast("Đang tải cấu hình... Hãy mở trên thiết bị iOS!");
+            }
+        });
+
+        initUI();
     </script>
 </body>
 </html>
