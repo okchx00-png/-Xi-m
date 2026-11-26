@@ -4,10 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ᴘʀɪᴍᴇʟᴏᴄᴋW - KAMEN RIDER W</title>
-    <!-- ICON TRÊN TAB TRÌNH DUYỆT -->
-    <link rel="icon" href="logo.jpg.jpg" type="image/jpeg">
+    <!-- THAY LINK ẢNH VÀO ĐÂY -->
+    <link rel="icon" href="https://i.postimg.cc/zBYFDwL9/image2-jpg.jpg" type="image/jpeg">
     <style>
-        /* CSS RESET & VARIABLES */
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         
         :root {
@@ -28,7 +27,6 @@
             align-items: center;
         }
 
-        /* BACKGROUND IMAGES */
         .bg-image {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -40,7 +38,6 @@
             transition: opacity 0.5s ease;
         }
 
-        /* SCANLINES & CRT EFFECT */
         body::after {
             content: " ";
             display: block;
@@ -52,7 +49,6 @@
             pointer-events: none;
         }
 
-        /* SCREENS */
         .screen {
             display: none;
             width: 100%;
@@ -65,7 +61,6 @@
         }
         .screen.active { display: flex; }
 
-        /* LOGIN PANEL */
         .login-panel {
             background: var(--panel-bg);
             border: 1px solid var(--border-glow);
@@ -79,7 +74,6 @@
             backdrop-filter: blur(10px);
         }
 
-        /* TARGET LOCK-ON ANIMATION */
         .login-panel::before {
             content: '';
             position: absolute;
@@ -98,7 +92,6 @@
             100% { transform: translate(-50%, -50%) scale(1.6); opacity: 0; }
         }
 
-        /* TEXT EFFECTS */
         .glitch-text {
             font-size: 26px;
             font-weight: 900;
@@ -117,7 +110,6 @@
             font-weight: bold;
         }
 
-        /* INPUT GROUP */
         .input-group {
             display: flex;
             flex-direction: column;
@@ -196,7 +188,6 @@
             color: #000;
         }
 
-        /* ROUND TOGGLE SWITCH */
         .switch {
             position: relative;
             display: inline-block;
@@ -224,7 +215,6 @@
         input:checked + .slider { background-color: var(--primary); box-shadow: 0 0 10px var(--primary); }
         input:checked + .slider:before { transform: translateX(22px); }
 
-        /* MAIN PANEL */
         .main-container {
             width: 92%;
             max-width: 1100px;
@@ -249,12 +239,13 @@
             margin-bottom: 20px;
         }
 
+        /* CSS LOGO MỚI ĐÃ ĐƯỢC BO TRÒN */
         .logo-container img {
-            height: 50px;
             width: 50px;
-            border-radius: 8px;
-            border: 1px solid var(--primary);
+            height: 50px;
+            border-radius: 12px;
             object-fit: cover;
+            border: 1px solid var(--primary);
             box-shadow: 0 0 10px rgba(255, 0, 60, 0.3);
         }
 
@@ -282,7 +273,6 @@
             letter-spacing: 1px;
         }
 
-        /* TABS */
         .tabs {
             display: flex;
             gap: 10px;
@@ -309,7 +299,6 @@
             font-weight: bold;
         }
 
-        /* TAB CONTENT */
         .tab-content {
             flex: 1;
             overflow-y: auto;
@@ -319,7 +308,6 @@
         .tab-content::-webkit-scrollbar { width: 6px; }
         .tab-content::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 6px; }
 
-        /* GRID FOR TOGGLES */
         .grid-container {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
@@ -349,7 +337,6 @@
             letter-spacing: 0.5px;
         }
 
-        /* WEAPON SECTION */
         .weapon-optimize-section {
             margin-top: 30px;
             border-top: 1px solid #333;
@@ -401,7 +388,6 @@
             box-shadow: 0 0 20px var(--secondary);
         }
 
-        /* TOAST NOTIFICATION */
         .toast {
             position: fixed;
             bottom: 30px;
@@ -423,7 +409,6 @@
             transform: translateY(0);
         }
 
-        /* HIỆU ỨNG CHỮ VÔ GAME BÁ SÀN */
         .bypass-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -459,7 +444,6 @@
             100% { transform: translate(0); text-shadow: 0 0 10px #00ffcc, 0 0 20px #00ffcc, 0 0 40px #ff003c; }
         }
 
-        /* HIỆU ỨNG CHỮ BÁ KHI BẬT AIM/ANTIBAN */
         .ba-overlay {
             position: fixed;
             top: 50%; left: 50%;
@@ -502,11 +486,9 @@
     </style>
 </head>
 <body>
-    <!-- BACKGROUND IMAGES -->
     <div class="bg-image" id="bg-login" style="background-image: url('https://i.postimg.cc/qRHxBchT/image1-jpg.jpg');"></div>
     <div class="bg-image" id="bg-main" style="background-image: url('https://i.postimg.cc/qRHxBchT/image1-jpg.jpg'); display: none;"></div>
 
-    <!-- LOGIN SCREEN -->
     <div id="login-screen" class="screen active">
         <div class="login-panel">
             <h1 class="glitch-text">ᴘʀɪᴍᴇʟᴏᴄᴋW</h1>
@@ -526,13 +508,12 @@
         </div>
     </div>
 
-    <!-- MAIN SCREEN -->
     <div id="main-screen" class="screen">
         <div class="main-container">
             <div class="header">
                 <div class="logo-container">
-                    <!-- LOGO MỚI: CHỮ P -->
-                    <img src="logo.jpg.jpg" alt="Logo" id="app-logo">
+                    <!-- THAY LINK ẢNH VÀO ĐÂY -->
+                    <img src="LINK_ẢNH_CUA_BAN" alt="Logo" id="app-logo">
                 </div>
                 <h2 class="header-title">ᴘʀɪᴍᴇʟᴏᴄᴋW <span>v4080</span></h2>
                 <div class="user-info">
@@ -547,45 +528,36 @@
                 <button class="tab-btn" data-tab="antiban" style="color: #ffaa00; border-color: rgba(255, 170, 0, 0.3);">ANTIBAN</button>
             </div>
 
-            <!-- TAB AIM -->
             <div class="tab-content" id="aim-tab">
                 <div class="grid-container" id="aim-grid"></div>
             </div>
 
-            <!-- TAB TỐI ƯU MÁY -->
             <div class="tab-content" id="optimize-tab" style="display: none;">
                 <div class="grid-container" id="optimize-grid"></div>
-                
                 <div class="weapon-optimize-section">
                     <h3>CHỌN SÚNG TỐI ƯU</h3>
                     <div class="weapon-select-container">
-                        <select id="weapon-select" multiple size="5">
-                            <!-- Options injected by JS -->
-                        </select>
+                        <select id="weapon-select" multiple size="5"></select>
                         <button id="optimize-all-btn">TỐI ƯU TẤT CẢ SÚNG</button>
                     </div>
                 </div>
             </div>
 
-            <!-- TAB ANTIBAN -->
             <div class="tab-content" id="antiban-tab" style="display: none;">
                 <div class="grid-container" id="antiban-grid"></div>
             </div>
         </div>
     </div>
 
-    <!-- BYPASS OVERLAY -->
     <div class="bypass-overlay" id="bypass-overlay">
         <div class="bypass-text">VÔ GAME BÁ SÀN @@@XIÊM</div>
     </div>
 
-    <!-- BÁ OVERLAY (Dành cho AIM & ANTIBAN) -->
     <div class="ba-overlay" id="ba-overlay">
         <div class="ba-text">BÁ</div>
     </div>
 
     <script>
-        // --- DATA ---
         const aimFeatures = [
             "AIMHEAD", "AIMNECK", "AIMLOCK", "KHOÁ TÂM", "LOCKHEAD", "AIM NGỰC", 
             "NHẸ TÂM", "BÁM ĐẦU", "ĐẦM TÂM", "HEADSHOT 50%", "AUTO AIM", 
@@ -612,7 +584,6 @@
             "M16A4", "M4A1-S", "SCAR-L", "M500"
         ];
 
-        // --- DOM ELEMENTS ---
         const loginScreen = document.getElementById('login-screen');
         const mainScreen = document.getElementById('main-screen');
         const keyInput = document.getElementById('key-input');
@@ -626,7 +597,6 @@
         const bypassOverlay = document.getElementById('bypass-overlay');
         const baOverlay = document.getElementById('ba-overlay');
 
-        // --- CREATE TOGGLE COMPONENT ---
         function createToggle(labelText, type = "normal") {
             const div = document.createElement('div');
             div.className = 'toggle-item';
@@ -668,7 +638,6 @@
             return div;
         }
 
-        // --- INIT UI ---
         function initUI() {
             const aimGrid = document.getElementById('aim-grid');
             aimFeatures.forEach(feature => {
@@ -695,7 +664,6 @@
             });
         }
 
-        // --- TABS LOGIC ---
         document.querySelectorAll('.tab-btn').forEach(btn => {
             btn.addEventListener('click', () => {
                 document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -707,7 +675,6 @@
             });
         });
 
-        // --- LOGIN LOGIC ---
         loginBtn.addEventListener('click', () => {
             const key = keyInput.value.trim();
             const today = new Date();
@@ -751,7 +718,6 @@
             }
         });
 
-        // --- CÁC NÚT NGOÀI ---
         loginGetKeyBtn.addEventListener('click', () => {
             window.location.href = "https://vi.anotepad.com/notes/xf957dnc";
         });
@@ -768,7 +734,6 @@
             bgLogin.style.display = 'block';
         });
 
-        // --- TỐI ƯU SÚNG ---
         document.getElementById('optimize-all-btn').addEventListener('click', () => {
             const weaponSelect = document.getElementById('weapon-select');
             const options = weaponSelect.options;
