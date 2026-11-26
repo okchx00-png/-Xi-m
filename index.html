@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ᴘʀɪᴍᴇʟᴏᴄᴋW - KAMEN RIDER W</title>
+    <!-- ICON TRÊN TAB TRÌNH DUYỆT -->
+    <link rel="icon" href="logo.jpg" type="image/jpeg">
     <style>
         /* CSS RESET & VARIABLES */
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
@@ -249,6 +251,7 @@
 
         .logo-container img {
             height: 50px;
+            width: 50px;
             border-radius: 8px;
             border: 1px solid var(--primary);
             object-fit: cover;
@@ -528,7 +531,8 @@
         <div class="main-container">
             <div class="header">
                 <div class="logo-container">
-                    <img src="https://i.postimg.cc/qRHxBchT/image1-jpg.jpg" alt="Logo" id="app-logo">
+                    <!-- LOGO MỚI: CHỮ P -->
+                    <img src="logo.jpg" alt="Logo" id="app-logo">
                 </div>
                 <h2 class="header-title">ᴘʀɪᴍᴇʟᴏᴄᴋW <span>v4080</span></h2>
                 <div class="user-info">
@@ -560,12 +564,6 @@
                         </select>
                         <button id="optimize-all-btn">TỐI ƯU TẤT CẢ SÚNG</button>
                     </div>
-                    
-                    <!-- NÚT TẢI MOBILECONFIG ĐƯỢC CHÈN VÀO ĐÂY -->
-                    <button id="download-profile-btn" style="margin-top: 20px; border-color: #ffaa00; color: #ffaa00; padding: 12px 20px; width: 100%;">
-                        TẢI CẤU HÌNH IOS (MOBILECONFIG)
-                    </button>
-                    
                 </div>
             </div>
 
@@ -642,7 +640,6 @@
             const input = document.createElement('input');
             input.type = 'checkbox';
             
-            // Gắn sự kiện dựa vào loại (type)
             if (type === "bypass") {
                 input.addEventListener('change', (e) => {
                     if (e.target.checked) {
@@ -651,7 +648,6 @@
                     }
                 });
             } else if (type === "aim" || type === "antiban") {
-                // Cả AIM và ANTIBAN đều hiện chữ BÁ
                 input.addEventListener('change', (e) => {
                     if (e.target.checked) {
                         baOverlay.classList.add('active');
@@ -686,7 +682,6 @@
 
             const antibanGrid = document.getElementById('antiban-grid');
             antibanFeatures.forEach(feature => {
-                // Nếu là BYPASS thì gắn hiệu ứng VÔ GAME BÁ SÀN, còn lại gắn hiệu ứng BÁ
                 let type = feature === "BYPASS" ? "bypass" : "antiban";
                 antibanGrid.appendChild(createToggle(feature, type));
             });
@@ -795,63 +790,6 @@
             toast.classList.add('show');
             setTimeout(() => toast.classList.remove('show'), 3000);
         }
-
-        // --- TẠO VÀ TẢI FILE MOBILECONFIG ---
-        const mobileconfigContent = `<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-    <key>PayloadContent</key>
-    <array>
-        <dict>
-            <key>PayloadType</key>
-            <string>com.apple.wifi.managed</string>
-            <key>PayloadIdentifier</key>
-            <string>com.xiem.wifi</string>
-            <key>PayloadUUID</key>
-            <string>12345678-1234-1234-1234-1234567890AB</string>
-            <key>PayloadVersion</key>
-            <integer>1</integer>
-            <key>SSID_STR</key>
-            <string>Ten_Wifi_Cua_Ban</string>
-            <key>AutoJoin</key>
-            <true/>
-            <key>EncryptionType</key>
-            <string>WPA</string>
-            <key>Password</key>
-            <string>Mat_Khau_Wifi</string>
-        </dict>
-    </array>
-    <key>PayloadDisplayName</key>
-    <string>XIEM Cau Hinh</string>
-    <key>PayloadIdentifier</key>
-    <string>com.xiem.profile</string>
-    <key>PayloadOrganization</key>
-    <string>XIEM</string>
-    <key>PayloadRemovalDisallowed</key>
-    <false/>
-    <key>PayloadUUID</key>
-    <string>87654321-4321-4321-4321-0987654321BA</string>
-    <key>PayloadVersion</key>
-    <integer>1</integer>
-</dict>
-</plist>`;
-
-        document.getElementById('download-profile-btn').addEventListener('click', () => {
-            const blob = new Blob([mobileconfigContent], { type: 'application/x-apple-aspen-config' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'xiem_config.mobileconfig';
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-            
-            if (typeof showToast === 'function') {
-                showToast("Đang tải cấu hình... Hãy mở trên thiết bị iOS!");
-            }
-        });
 
         initUI();
     </script>
